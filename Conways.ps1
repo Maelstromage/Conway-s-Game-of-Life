@@ -1,9 +1,12 @@
 $global:Survive = 2,3
 $global:Born = 3
-$sleep = 100
+$sleep = 0
 $col = 50
 $row = 25
 $global:grid = New-Object 'object[,]' $col,$row
+$global:color = 0
+$global:cell = "@"
+$global:dead = " "
 function Random-Grid{
     param($col,$row)
     $global:grid = $null
@@ -31,40 +34,19 @@ function glider-Grid{
     $global:grid[3,2] = 1
 }
 function Display-Grid{
-    cls
+    #cls
     $line = ""
     for($y=0;$y -lt $row;$y++){
         for($x=0;$x -lt $col;$x++){
-            $line += $global:grid[$x,$y] 
+            if($global:grid[$x,$y] -eq 1){$line += $global:cell}
+            if($global:grid[$x,$y] -eq 0){$line += $global:dead}
         }
         $line += "`r`n"
     }
-    Write-host $line -NoNewline
+    Write-host $line -NoNewline #-ForegroundColor $global:color
+    $global:color += 1
+    if($global:color -ge 16){$global:color = 9}
     sleep -Milliseconds $sleep
-}
-function Display-atgrid{
-    cls
-    $line = ""
-    for($y=0;$y -lt $row;$y++){
-        for($x=0;$x -lt $col;$x++){
-            if($global:grid[$x,$y] -eq 1){$line += "@"}
-            if($global:grid[$x,$y] -eq 0){$line += " "}
-        }
-        $line += "`r`n"
-    }
-    Write-host $line -NoNewline
-    sleep -Milliseconds $sleep
-}
-function Display-Grid2{
-    param($grid2)
-    cls
-    for($y=0;$y -lt $row;$y++){
-        write-host ""
-        for($x=0;$x -lt $col;$x++){
-            Write-host $grid2[$x,$y] -NoNewline
-        }
-    }
-    sleep -Milliseconds 250
 }
 function Check-Neighbor{
     param([int32]$x,[int32]$y,$col,$row,[Switch]$debug)
@@ -111,7 +93,7 @@ function New-Grid{
 }
 Random-Grid -col $col -row $row
 do{
-    Display-atgrid
+    Display-Grid
     New-Grid -row $row -col $col
 }while($true)
 
